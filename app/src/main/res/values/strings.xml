@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">simpleGame</string>
-    <string name="newgame">NewGame</string>
+    <string name="newgame">Back</string>
     <string name="play">Play</string>
     <string name="headliner">Simple\nGame</string>
+    <string name="new_game">New game</string>
 </resources>

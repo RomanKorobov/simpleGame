@@ -8,7 +8,7 @@
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/green_kind</item>
-        <item name="colorSecondaryVariant">@color/the_gray_kind</item>
+        <item name="colorSecondaryVariant">@color/blue700</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Customize your theme here. -->
     </style>

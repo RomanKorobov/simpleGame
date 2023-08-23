@@ -1,321 +1,243 @@
 package com.example.simplegame
 
-import android.annotation.SuppressLint
-import android.content.Context.WINDOW_SERVICE
 import android.graphics.Color
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.view.MotionEvent
 import android.view.View
-import android.view.WindowManager
-import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
+import androidx.core.view.GestureDetectorCompat
 import androidx.fragment.app.Fragment
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.example.simplegame.databinding.FragmentPlayBinding
-import kotlin.math.abs
 
 class PlayFragment : Fragment(R.layout.fragment_play) {
     private val binding: FragmentPlayBinding by viewBinding()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initCells()
-        newMove()
-        refresh()
-        binding.root.setOnTouchListener(object : View.OnTouchListener {
-            var xStart = 0f
-            var yStart = 0f
-            override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-                when (event?.action) {
-                    MotionEvent.ACTION_DOWN -> {
-                        xStart = event.x
-                        yStart = event.y
-                    }
-
-                    MotionEvent.ACTION_MOVE -> {
-                    }
-
-                    MotionEvent.ACTION_UP -> {
-                        val deltaX = event.x - xStart
-                        val deltaY = event.y - yStart
-                        if (abs(deltaX) > 5 * abs(deltaY)) {
-                            if (deltaX > 0) {
-                                moveRight()
-                            }
-                            if (deltaX < 0) {
-                                moveLeft()
-                            }
-                        }
-                        if (abs(deltaY) > 5 * abs(deltaX)) {
-                            if (deltaY > 0) {
-                                moveDown()
-                            }
-                            if (deltaY < 0) {
-                                moveUp()
-                            }
-                        }
-                    }
-                }
+        initStickers()
+        val gestureDetector = GestureDetectorCompat(requireContext(), SwipeListener(this))
+        view.setOnTouchListener(object : View.OnTouchListener {
+            override fun onTouch(v: View?, event: MotionEvent): Boolean {
+                gestureDetector.onTouchEvent(event)
                 return true
             }
         })
+        newNumber()
+        refresh()
         binding.newGameButton.setOnClickListener {
-            clearTheField()
-            newMove()
+            clear()
+            newNumber()
             refresh()
         }
     }
 
-    private fun newMove() {
-        val cellNumber = (0..15).random()
-        if (numbers[cellNumber] == 0) {
-            numbers[cellNumber] = 2
-        } else {
-            var i = 0
-            while (i < 16) {
-                if (numbers[i] == 0) {
-                    numbers[i] = (1..2).random() * 2
-                    i = 17
+    fun move(direction: Directions) {
+        when (direction) {
+            Directions.DOWN -> down()
+            Directions.UP -> up()
+            Directions.LEFT -> left()
+            Directions.RIGHT -> right()
+            Directions.NONE -> {}
+        }
+    }
+
+    private fun down() {
+        var moveFlag = false
+        for (j in 0 until 4) {
+            val new = Array(4) { 0 }
+            var cell = 3
+            val values = mutableListOf<Int>()
+            for (i in 3 downTo 0) {
+                if (nums[i][j] != 0) values.add(nums[i][j])
+            }
+            if (values.isEmpty()) continue
+            new[cell] = values[0]
+            for (f in 1 until values.size) {
+                if (values[f] == new[cell]) {
+                    new[cell] *= 2
+                    cell--
                 } else {
-                    i++
+                    cell -= if (new[cell] == 0) 0 else 1
+                    new[cell] = values[f]
                 }
             }
-
+            for (k in new.indices) {
+                moveFlag = moveFlag || nums[k][j] != new[k]
+                nums[k][j] = new[k]
+            }
+        }
+        if (moveFlag) {
+            newNumber()
+            refresh()
         }
     }
 
-    @SuppressLint("ResourceAsColor")
+    private fun up() {
+        var moveFlag = false
+        for (j in 0 until 4) {
+            val new = Array(4) { 0 }
+            var cell = 0
+            val values = mutableListOf<Int>()
+            for (i in 0 until 4) {
+                if (nums[i][j] != 0) values.add(nums[i][j])
+            }
+            if (values.isEmpty()) continue
+            new[cell] = values[0]
+            for (f in 1 until values.size) {
+                if (values[f] == new[cell]) {
+                    new[cell] *= 2
+                    cell++
+                } else {
+                    cell += if (new[cell] == 0) 0 else 1
+                    new[cell] = values[f]
+                }
+            }
+            for (k in new.indices) {
+                moveFlag = moveFlag || nums[k][j] != new[k]
+                nums[k][j] = new[k]
+            }
+        }
+        if (moveFlag) {
+            newNumber()
+            refresh()
+        }
+    }
+
+    private fun left() {
+        var moveFlag = false
+        for (i in nums.indices) {
+            val new = Array(4) { 0 }
+            var cell = 0
+            val values = nums[i].filter { it != 0 }
+            if (values.isEmpty()) continue
+            new[cell] = values[0]
+            for (j in 1 until values.size) {
+                if (values[j] == new[cell]) {
+                    new[cell] *= 2
+                    cell++
+                } else {
+                    cell += if (new[cell] == 0) 0 else 1
+                    new[cell] = values[j]
+                }
+            }
+            for (k in new.indices) {
+                moveFlag = moveFlag || nums[i][k] != new[k]
+                nums[i][k] = new[k]
+            }
+        }
+        if (moveFlag) {
+            newNumber()
+            refresh()
+        }
+    }
+
+    private fun right() {
+        var moveFlag = false
+        for (i in nums.indices) {
+            val new = Array(4) { 0 }
+            var cell = 3
+            val values = nums[i].filter { it != 0 }
+            if (values.isEmpty()) continue
+            new[cell] = values[values.size - 1]
+            for (j in values.size - 2 downTo 0) {
+                if (values[j] == new[cell]) {
+                    new[cell] *= 2
+                    cell--
+                } else {
+                    cell -= if (new[cell] == 0) 0 else 1
+                    new[cell] = values[j]
+                }
+            }
+            for (k in new.indices) {
+                moveFlag = moveFlag || nums[i][k] != new[k]
+                nums[i][k] = new[k]
+            }
+        }
+        if (moveFlag) {
+            newNumber()
+            refresh()
+        }
+    }
+
+    private fun newNumber() {
+        val new = (1..2).random() * 2
+        val candidate = (0..3).random()
+        for (j in nums[candidate].indices) {
+            if (nums[candidate][j] == 0) {
+                nums[candidate][j] = new
+                return
+            }
+        }
+        for (i in nums.indices) {
+            for (j in nums[i].indices) {
+                if (nums[i][j] == 0) {
+                    nums[i][j] = new
+                    return
+                }
+            }
+        }
+
+    }
+
     private fun refresh() {
-        for (i in 0..15) {
-            if (numbers[i] > 0) {
-                cells[i].text = numbers[i].toString()
-                cells[i].setTextColor(Color.parseColor("#3F51B5"))
-                cells[i].textSize = 50f
-                val length = cells[i].text.length
-                if (length == 2) {
-                    cells[i].setTextColor(Color.parseColor("#FFEA00"))
-                } else if (length == 3) {
-                    cells[i].textSize = 30f
-                    cells[i].setTextColor(Color.parseColor("#E53935"))
-                } else if (length == 4) {
-                    cells[i].textSize = 20f
-                    cells[i].setTextColor(Color.parseColor("#E91E63"))
-                } else if (length > 4) {
-                    cells[i].textSize = 10f
-                    cells[i].setTextColor(Color.parseColor("#b21639"))
-                }
+        for (i in nums.indices) {
+            for (j in nums[i].indices) {
+                when (nums[i][j]) {
+                    2, 4, 8 -> {
+                        stickers[i][j].setTextColor(Color.parseColor("#00E676"))
+                        stickers[i][j].textSize = 50f
+                    }
 
-            } else {
-                cells[i].text = ""
-            }
-        }
-    }
+                    16, 32, 64 -> {
+                        stickers[i][j].setTextColor(Color.parseColor("#FFFF00"))
+                        stickers[i][j].textSize = 35f
+                    }
 
-    private fun moveUp() {
-        var noMoveFlag = true
-        for (i in 4..15) {
-            if (numbers[i] != 0) {
-                if (numbers[i] == numbers[i - 4]) {
-                    numbers[i - 4] = 2 * numbers[i]
-                    numbers[i] = 0
-                    noMoveFlag = false
-                }
-                if (numbers[i - 4] == 0) {
-                    var stopFlag = false
-                    var current = i
-                    while (!stopFlag) {
-                        numbers[current - 4] = numbers[current]
-                        numbers[current] = 0
-                        current -= 4
-                        noMoveFlag = false
-                        if (current < 4) {
-                            break
-                        }
-                        if (numbers[current - 4] != 0) {
-                            if (numbers[current - 4] == numbers[current]) {
-                                numbers[current - 4] = 2 * numbers[current]
-                                numbers[i] = 0
-                                noMoveFlag = false
-                            }
-                            stopFlag = true
-                        }
+                    128, 256, 512 -> {
+                        stickers[i][j].setTextColor(Color.parseColor("#FF5722"))
+                        stickers[i][j].textSize = 25f
+                    }
+
+                    1024, 2048 -> {
+                        stickers[i][j].setTextColor(Color.parseColor("#FF5722"))
+                        stickers[i][j].textSize = 15f
+                    }
+
+                    else -> {
+                        stickers[i][j].setTextColor(Color.parseColor("#BF360C"))
+                        stickers[i][j].textSize = 12f
                     }
                 }
+                stickers[i][j].text = if (nums[i][j] == 0) "" else nums[i][j].toString()
+                if (nums[i][j] == 2048) Toast.makeText(
+                    requireContext(),
+                    "Вы выйграли!",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
-        if (!noMoveFlag) {
-            newMove()
-            refresh()
-        }
     }
 
-    private fun moveDown() {
-        var noMoveFlag = true
-        for (i in 11 downTo 0) {
-            if (numbers[i] != 0) {
-                if (numbers[i] == numbers[i + 4]) {
-                    numbers[i + 4] = 2 * numbers[i]
-                    numbers[i] = 0
-                    noMoveFlag = false
-                }
-                if (numbers[i + 4] == 0) {
-                    var stopFlag = false
-                    var current = i
-                    while (!stopFlag) {
-                        numbers[current + 4] = numbers[current]
-                        numbers[current] = 0
-                        current += 4
-                        noMoveFlag = false
-                        if (current > 11) {
-                            break
-                        }
-                        if (numbers[current + 4] != 0) {
-                            if (numbers[current + 4] == numbers[current]) {
-                                numbers[current + 4] = 2 * numbers[current]
-                                numbers[i] = 0
-                                noMoveFlag = false
-                            }
-                            stopFlag = true
-                        }
-                    }
-                }
+    private fun clear() {
+        for (i in nums.indices) {
+            for (j in nums[i].indices) {
+                nums[i][j] = 0
             }
         }
-        if (!noMoveFlag) {
-            newMove()
-            refresh()
-        }
     }
 
-    private fun moveLeft() {
-        var noMoveFlag = true
-        for (i in 1..15) {
-            if ((numbers[i] != 0) && (i % 4 != 0)) {
-                if (numbers[i] == numbers[i - 1]) {
-                    numbers[i - 1] = 2 * numbers[i]
-                    numbers[i] = 0
-                    noMoveFlag = false
-                }
-                if (numbers[i - 1] == 0) {
-                    var stopFlag = false
-                    var current = i
-                    while (!stopFlag) {
-                        numbers[current - 1] = numbers[current]
-                        numbers[current] = 0
-                        current--
-                        noMoveFlag = false
-                        if (current % 4 == 0) {
-                            break
-                        }
-                        if (numbers[current - 1] != 0) {
-                            if (numbers[current - 1] == numbers[current]) {
-                                numbers[current - 1] = 2 * numbers[current]
-                                numbers[i] = 0
-                                noMoveFlag = false
-                            }
-                            stopFlag = true
-                        }
-                    }
-                }
-            }
-        }
-        if (!noMoveFlag) {
-            newMove()
-            refresh()
-        }
+    private fun initStickers() {
+        stickers = listOf(
+            listOf(binding.textViewA0, binding.textViewA1, binding.textViewA2, binding.textViewA3),
+            listOf(binding.textViewB0, binding.textViewB1, binding.textViewB2, binding.textViewB3),
+            listOf(binding.textViewC0, binding.textViewC1, binding.textViewC2, binding.textViewC3),
+            listOf(binding.textViewD0, binding.textViewD1, binding.textViewD2, binding.textViewD3)
+        )
     }
 
-    private fun moveRight() {
-        var noMoveFlag = true
-        for (i in 14 downTo 0) {
-            if ((numbers[i] != 0) && (i % 4 != 3)) {
-                if (numbers[i] == numbers[i + 1]) {
-                    numbers[i + 1] = 2 * numbers[i]
-                    numbers[i] = 0
-                    noMoveFlag = false
-                }
-                if (numbers[i + 1] == 0) {
-                    var stopFlag = false
-                    var current = i
-                    while (!stopFlag) {
-                        numbers[current + 1] = numbers[current]
-                        numbers[current] = 0
-                        current++
-                        noMoveFlag = false
-                        if (current % 4 == 3) {
-                            break
-                        }
-                        if (numbers[current + 1] != 0) {
-                            if (numbers[current + 1] == numbers[current]) {
-                                numbers[current + 1] = 2 * numbers[current]
-                                numbers[i] = 0
-                                noMoveFlag = false
-                            }
-                            stopFlag = true
-                        }
-                    }
-                }
-            }
-        }
-        if (!noMoveFlag) {
-            newMove()
-            refresh()
-        }
-    }
-
-    private fun clearTheField() {
-        for (i in 0..15) {
-            numbers[i] = 0
-        }
-    }
-
-    private fun initCells() {
-        val displayMetrics = DisplayMetrics()
-        val windowManager = context?.getSystemService(WINDOW_SERVICE) as WindowManager
-        windowManager.defaultDisplay.getMetrics(displayMetrics)
-        phoneWidth = displayMetrics.widthPixels
-        cells.add(0, binding.firstButton)
-        cells.add(1, binding.secondButton)
-        cells.add(2, binding.thirdButton)
-        cells.add(3, binding.fourButton)
-        cells.add(4, binding.fiveButton)
-        cells.add(5, binding.sixButton)
-        cells.add(6, binding.sevenButton)
-        cells.add(7, binding.eightButton)
-        cells.add(8, binding.nineButton)
-        cells.add(9, binding.tenButton)
-        cells.add(10, binding.elevenButton)
-        cells.add(11, binding.twelveButton)
-        cells.add(12, binding.thirteenButton)
-        cells.add(13, binding.fourteenButton)
-        cells.add(14, binding.fifteenButton)
-        cells.add(15, binding.sixteenButton)
-        images.add(0, binding.imageFirst)
-        images.add(0, binding.imageSecond)
-        images.add(0, binding.imageThird)
-        images.add(0, binding.imageFour)
-        images.add(0, binding.imageFive)
-        images.add(0, binding.imageSix)
-        images.add(0, binding.imageSeven)
-        images.add(0, binding.imageEight)
-        images.add(0, binding.imageNine)
-        images.add(0, binding.imageTen)
-        images.add(0, binding.imageEleven)
-        images.add(0, binding.imageTwelve)
-        images.add(0, binding.imageThirteen)
-        images.add(0, binding.imageFourteen)
-        images.add(0, binding.imageFifteen)
-        images.add(0, binding.imageSixteen)
-        images.forEach { image ->
-            image.layoutParams.height = (phoneWidth / 4)
-            image.layoutParams.width = (phoneWidth / 4)
-        }
-    }
-
-    companion object Singleton {
-        var numbers = mutableListOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-        var cells = mutableListOf<TextView>()
-        var images = mutableListOf<ImageView>()
-        var phoneWidth = 20
+    companion object {
+        private val nums = Array(4) { Array(4) { 0 } }
+        private var stickers = listOf(listOf<TextView>())
     }
 }
