@@ -13,6 +13,7 @@ import com.example.simplegame.databinding.FragmentPlayBinding
 
 class PlayFragment : Fragment(R.layout.fragment_play) {
     private val binding: FragmentPlayBinding by viewBinding()
+    private var winFlag = true
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initStickers()
@@ -210,11 +211,14 @@ class PlayFragment : Fragment(R.layout.fragment_play) {
                     }
                 }
                 stickers[i][j].text = if (nums[i][j] == 0) "" else nums[i][j].toString()
-                if (nums[i][j] == 2048) Toast.makeText(
-                    requireContext(),
-                    "Вы выйграли!",
-                    Toast.LENGTH_SHORT
-                ).show()
+                if (nums[i][j] == 2048 && winFlag) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Вы выйграли!",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    winFlag = false
+                }
             }
         }
     }
