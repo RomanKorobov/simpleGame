@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/blue_kind">
+    android:background="@color/yellow2">
 
     <GridLayout
         android:id="@+id/field"
@@ -29,6 +29,7 @@
                 android:id="@+id/el00"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:foreground="@drawable/for_cells"
                 android:background="@color/gen"
                 tools:text="2"
                 android:gravity="center"
@@ -47,6 +48,7 @@
                 android:layout_height="match_parent"
                 android:background="@color/gen"
                 tools:text="2"
+                android:foreground="@drawable/for_cells"
                 android:gravity="center"
                 android:textSize="25sp" />
         </androidx.cardview.widget.CardView>
@@ -62,6 +64,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/gen"
+                android:foreground="@drawable/for_cells"
                 tools:text="2"
                 android:gravity="center"
                 android:textSize="25sp" />
@@ -80,6 +83,7 @@
                 android:background="@color/gen"
                 tools:text="2"
                 android:gravity="center"
+                android:foreground="@drawable/for_cells"
                 android:textSize="25sp" />
         </androidx.cardview.widget.CardView>
         <androidx.cardview.widget.CardView
@@ -94,6 +98,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/gen"
+                android:foreground="@drawable/for_cells"
                 tools:text="2"
                 android:gravity="center"
                 android:textSize="25sp" />
@@ -109,6 +114,7 @@
                 android:id="@+id/el11"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:foreground="@drawable/for_cells"
                 android:background="@color/gen"
                 tools:text="2"
                 android:gravity="center"
@@ -124,6 +130,7 @@
             <TextView
                 android:id="@+id/el12"
                 android:layout_width="match_parent"
+                android:foreground="@drawable/for_cells"
                 android:layout_height="match_parent"
                 android:background="@color/gen"
                 tools:text="2"
@@ -140,6 +147,7 @@
             <TextView
                 android:id="@+id/el13"
                 android:layout_width="match_parent"
+                android:foreground="@drawable/for_cells"
                 android:layout_height="match_parent"
                 android:background="@color/gen"
                 tools:text="2"
@@ -158,6 +166,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/gen"
+                android:foreground="@drawable/for_cells"
                 tools:text="2"
                 android:gravity="center"
                 android:textSize="25sp" />
@@ -173,6 +182,7 @@
                 android:id="@+id/el21"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:foreground="@drawable/for_cells"
                 android:background="@color/gen"
                 tools:text="2"
                 android:gravity="center"
@@ -190,6 +200,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/gen"
+                android:foreground="@drawable/for_cells"
                 tools:text="2"
                 android:gravity="center"
                 android:textSize="25sp" />
@@ -205,6 +216,7 @@
                 android:id="@+id/el23"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:foreground="@drawable/for_cells"
                 android:background="@color/gen"
                 tools:text="2"
                 android:gravity="center"
@@ -221,6 +233,7 @@
                 android:id="@+id/el30"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:foreground="@drawable/for_cells"
                 android:background="@color/gen"
                 tools:text="2"
                 android:gravity="center"
@@ -238,6 +251,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/gen"
+                android:foreground="@drawable/for_cells"
                 tools:text="2"
                 android:gravity="center"
                 android:textSize="25sp" />
@@ -254,6 +268,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/gen"
+                android:foreground="@drawable/for_cells"
                 tools:text="2"
                 android:gravity="center"
                 android:textSize="25sp" />
@@ -271,10 +286,24 @@
                 android:layout_height="match_parent"
                 android:background="@color/gen"
                 tools:text="2"
+                android:foreground="@drawable/for_cells"
                 android:gravity="center"
                 android:textSize="25sp" />
         </androidx.cardview.widget.CardView>
     </GridLayout>
+
+    <Button
+        android:id="@+id/newGameButton"
+        android:background="@drawable/for_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/new_game"
+        android:textAllCaps="false"
+        android:fontFamily="@font/aldrich"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/field" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
