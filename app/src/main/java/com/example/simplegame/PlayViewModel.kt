@@ -39,12 +39,16 @@ class PlayViewModel(private val repository: Repository): ViewModel() {
         viewModelScope.launch (Dispatchers.Default + handler){
             val left = async { repository.swipeLeft() }
             _leftField.postValue(left.await())
+            _leftReady.postValue(true)
             val right = async { repository.swipeRight() }
             _rightField.postValue(right.await())
+            _rightReady.postValue(true)
             val up = async { repository.swipeUp() }
             _upField.postValue(up.await())
+            _upReady.postValue(true)
             val down = async { repository.swipeDown() }
             _downField.postValue(down.await())
+            _downReady.postValue(true)
         }
     }
     fun reset() {
