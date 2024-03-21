@@ -41,4 +41,8 @@ class PlayFragment : Fragment(R.layout.fragment_play), SwipeHandler {
     override fun swipeRight() {
         Log.d("GEST", "right")
     }
+
+    fun drawField(field: Array<IntArray>) {
+
+    }
 }
