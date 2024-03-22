@@ -1,10 +1,38 @@
 package com.example.simplegame
 
+import java.lang.Math.random
+import kotlin.math.abs
+import kotlin.random.Random
+
 class Repository {
     init {
         field = Data.get()
+        var check = true
+        for (i in field.indices) {
+            for (j in field[i].indices) {
+                if (field[i][j] != 0) {
+                    check = false
+                    break
+                }
+            }
+        }
+        if (check) startedPosition()
     }
 
+    fun startedPosition() {
+        getNewNum()
+        getNewNum()
+    }
+
+    fun getNewNum() {
+        val i = abs(Random.nextInt()) % 4
+        val j = abs(Random.nextInt()) % 4
+        if (field[i][j] != 0) {
+            getNewNum()
+        } else {
+            field[i][j] = listOf(2, 4).random()
+        }
+    }
     private fun predictLeft() {
         leftField = Array(4) { IntArray(4) }
         for (i in 0 until 4) {

@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
 import com.example.simplegame.databinding.FragmentPlayBinding
 
 class PlayFragment : Fragment(R.layout.fragment_play), SwipeHandler {
@@ -16,7 +17,7 @@ class PlayFragment : Fragment(R.layout.fragment_play), SwipeHandler {
     private lateinit var swipeListener: SwipeListener
     private val viewModel: PlayViewModel by viewModels()
     private val handler = Handler(Looper.getMainLooper())
-    private var command: Command? = null
+    private var command = MutableLiveData<Command?>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,51 +31,69 @@ class PlayFragment : Fragment(R.layout.fragment_play), SwipeHandler {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        observe()
     }
 
     override fun swipeUp() {
-        command = Command.UP
+        command.postValue(Command.UP)
     }
 
     override fun swipeDown() {
-        command = Command.DOWN
+        command.postValue(Command.DOWN)
     }
 
     override fun swipeLeft() {
-        command = Command.LEFT
+        command.postValue(Command.LEFT)
     }
 
     override fun swipeRight() {
-        command = Command.RIGHT
+        command.postValue(Command.RIGHT)
     }
 
     fun drawField(field: Array<IntArray>) {
 
     }
 
+    fun nextMove(com: Command) {
+        when(com) {
+            Command.LEFT -> { drawField(viewModel.leftField.value!!) }
+            Command.UP -> { drawField(viewModel.upField.value!!) }
+            Command.RIGHT -> { drawField(viewModel.rightField.value!!) }
+            Command.DOWN -> { drawField(viewModel.downField.value!!) }
+        }
+        command.postValue(null)
+        viewModel.reset()
+    }
+
     fun observe() {
-        viewModel.leftReady.observe(viewLifecycleOwner) {
-            if (it && command == Command.LEFT) handler.post {
-                viewModel.leftField.value?.let { it1 -> drawField(it1) }
-                command = null
+        viewModel.leftField.observe(viewLifecycleOwner) {
+            if (it != null && command.value == Command.LEFT) handler.post {
+                viewModel.leftField.value?.let { nextMove(command.value!!) }
             }
         }
-        viewModel.rightReady.observe(viewLifecycleOwner) {
-            if (it && command == Command.RIGHT) handler.post {
-                viewModel.rightField.value?.let { it1 -> drawField(it1) }
-                command = null
+        viewModel.rightField.observe(viewLifecycleOwner) {
+            if (it != null && command.value == Command.RIGHT) handler.post {
+                viewModel.rightField.value?.let { nextMove(command.value!!) }
             }
         }
-        viewModel.upReady.observe(viewLifecycleOwner) {
-            if (it && command == Command.UP) handler.post {
-                viewModel.upField.value?.let { it1 -> drawField(it1) }
-                command = null
+        viewModel.rightField.observe(viewLifecycleOwner) {
+            if (it != null && command.value == Command.UP) handler.post {
+                viewModel.upField.value?.let { nextMove(command.value!!) }
             }
         }
-        viewModel.downReady.observe(viewLifecycleOwner) {
-            if (it && command == Command.DOWN) handler.post {
-                viewModel.downField.value?.let { it1 -> drawField(it1) }
-                command = null
+        viewModel.downField.observe(viewLifecycleOwner) {
+            if (it != null && command.value ==  Command.DOWN) handler.post {
+                viewModel.downField.value?.let { nextMove(command.value!!) }
+            }
+        }
+        command.observe(viewLifecycleOwner) {
+            if (it != null) {
+                when(it) {
+                    Command.DOWN -> { viewModel.downField.value?.let { nextMove(command.value!!) } }
+                    Command.RIGHT -> { viewModel.rightField.value?.let { nextMove(command.value!!) } }
+                    Command.LEFT -> { viewModel.leftField.value?.let { nextMove(command.value!!) } }
+                    Command.UP -> { viewModel.upField.value?.let { nextMove(command.value!!) } }
+                }
             }
         }
     }
