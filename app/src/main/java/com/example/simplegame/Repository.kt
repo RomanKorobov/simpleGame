@@ -1,6 +1,6 @@
 package com.example.simplegame
 
-import java.lang.Math.random
+import android.util.Log
 import kotlin.math.abs
 import kotlin.random.Random
 
@@ -18,19 +18,24 @@ class Repository {
         }
         if (check) startedPosition()
     }
+    fun getField() = field
 
-    fun startedPosition() {
-        getNewNum()
-        getNewNum()
+    fun setField(curField: Array<IntArray>) {
+        field = curField
     }
 
-    fun getNewNum() {
+    fun startedPosition() {
+        getNewNum(field)
+        getNewNum(field)
+    }
+
+    fun getNewNum(curField: Array<IntArray>) {
         val i = abs(Random.nextInt()) % 4
         val j = abs(Random.nextInt()) % 4
-        if (field[i][j] != 0) {
-            getNewNum()
+        if (curField[i][j] != 0) {
+            getNewNum(curField)
         } else {
-            field[i][j] = listOf(2, 4).random()
+            curField[i][j] = listOf(2, 4).random()
         }
     }
     private fun predictLeft() {
@@ -51,6 +56,7 @@ class Repository {
             }
             row.clear()
         }
+        getNewNum(leftField)
     }
 
     private fun predictRight() {
@@ -69,8 +75,10 @@ class Repository {
             for (j in row.indices) {
                 rightField[i][3 - j] = row[j]
             }
+            Log.d("GEST", rightField[i].joinToString(" "))
             row.clear()
         }
+        getNewNum(rightField)
     }
 
     private fun predictUp() {
@@ -91,6 +99,7 @@ class Repository {
             }
             col.clear()
         }
+        getNewNum(upField)
     }
 
     private fun predictDown() {
@@ -111,6 +120,7 @@ class Repository {
             }
             col.clear()
         }
+        getNewNum(downField)
     }
 
     fun swipeLeft(): Array<IntArray> {

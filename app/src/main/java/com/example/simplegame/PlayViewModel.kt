@@ -42,4 +42,8 @@ class PlayViewModel(private val repository: Repository): ViewModel() {
         _upField.postValue(null)
         _downField.postValue(null)
     }
+    fun getField() = repository.getField()
+    fun setField(curField: Array<IntArray>) {
+        repository.setField(curField)
+    }
 }
