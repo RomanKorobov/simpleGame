@@ -42,6 +42,7 @@ class PlayFragment : Fragment(R.layout.fragment_play), SwipeHandler {
         observe()
         drawField(viewModel.getField())
         viewModel.predict()
+        binding.newGameButton.setOnClickListener { newGame() }
     }
 
     override fun swipeUp() {
@@ -60,38 +61,79 @@ class PlayFragment : Fragment(R.layout.fragment_play), SwipeHandler {
         command.postValue(Command.RIGHT)
     }
 
+    override fun onDestroyView() {
+        Data.save(viewModel.getField())
+        super.onDestroyView()
+    }
+
+    fun newGame() {
+        viewModel.reset()
+        command.postValue(null)
+        viewModel.setNewGameField()
+        drawField(viewModel.getField())
+        viewModel.predict()
+    }
+
     fun drawField(field: Array<IntArray>) {
         for (i in field.indices) {
             for (j in field[i].indices) {
                 val textView: TextView = mesh[i to j]!!
-                if (field[i][j] == 0) textView.text = "" else textView.text = field[i][j].toString()
-                textView.setTextColor(Color.BLACK)
+                if (field[i][j] == 0) {
+                    textView.text = ""
+                } else {
+                    textView.text = field[i][j].toString()
+                    when (field[i][j]) {
+                        in 2 .. 8 -> {
+                            textView.setTextColor(Color.BLACK)
+                            textView.textSize = 25f
+                        }
+                        in 16 .. 64 -> {
+                            textView.setTextColor(Color.parseColor("#b21639"))
+                            textView.textSize = 25f
+                        }
+                        in 128 .. 512 -> {
+                            textView.setTextColor(Color.parseColor("#00E676"))
+                            textView.textSize = 25f
+                        }
+                        else -> {
+                            textView.setTextColor(Color.parseColor("#E53935"))
+                            textView.textSize = 16f
+                        }
+                    }
+                }
             }
         }
     }
 
     fun nextMove(com: Command) {
+        var valid = true
+        val newField: Array<IntArray>
         when(com) {
             Command.LEFT -> {
-                drawField(viewModel.leftField.value!!)
-                viewModel.setField(viewModel.leftField.value!!)
+                newField = viewModel.leftField.value!!
+                valid = viewModel.validMove(newField)
             }
             Command.UP -> {
-                drawField(viewModel.upField.value!!)
-                viewModel.setField(viewModel.upField.value!!)
+                newField = viewModel.upField.value!!
+                valid = viewModel.validMove(newField)
             }
             Command.RIGHT -> {
-                drawField(viewModel.rightField.value!!)
-                viewModel.setField(viewModel.rightField.value!!)
+                newField = viewModel.rightField.value!!
+                valid = viewModel.validMove(newField)
             }
             Command.DOWN -> {
-                drawField(viewModel.downField.value!!)
-                viewModel.setField(viewModel.downField.value!!)
+                newField = viewModel.downField.value!!
+                valid = viewModel.validMove(newField)
             }
         }
-        command.postValue(null)
-        viewModel.reset()
-        viewModel.predict()
+        if (valid) {
+            viewModel.addNewNum(newField)
+            drawField(newField)
+            viewModel.setField(newField)
+            command.postValue(null)
+            viewModel.reset()
+            viewModel.predict()
+        }
     }
 
     fun observe() {

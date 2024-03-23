@@ -46,4 +46,14 @@ class PlayViewModel(private val repository: Repository): ViewModel() {
     fun setField(curField: Array<IntArray>) {
         repository.setField(curField)
     }
+    fun setNewGameField() {
+        repository.setNewGameField()
+    }
+
+    fun addNewNum(targetField: Array<IntArray>) {
+        repository.getNewNum(targetField)
+    }
+    fun validMove(newField: Array<IntArray>): Boolean {
+        return !newField.contentEquals(repository.getField())
+    }
 }

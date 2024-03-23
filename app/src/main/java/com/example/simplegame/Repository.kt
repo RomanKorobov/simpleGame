@@ -24,6 +24,11 @@ class Repository {
         field = curField
     }
 
+    fun setNewGameField() {
+        field = Array(4) { IntArray(4) }
+        startedPosition()
+    }
+
     fun startedPosition() {
         getNewNum(field)
         getNewNum(field)
@@ -56,7 +61,6 @@ class Repository {
             }
             row.clear()
         }
-        getNewNum(leftField)
     }
 
     private fun predictRight() {
@@ -78,7 +82,6 @@ class Repository {
             Log.d("GEST", rightField[i].joinToString(" "))
             row.clear()
         }
-        getNewNum(rightField)
     }
 
     private fun predictUp() {
@@ -99,7 +102,6 @@ class Repository {
             }
             col.clear()
         }
-        getNewNum(upField)
     }
 
     private fun predictDown() {
@@ -120,7 +122,6 @@ class Repository {
             }
             col.clear()
         }
-        getNewNum(downField)
     }
 
     fun swipeLeft(): Array<IntArray> {
