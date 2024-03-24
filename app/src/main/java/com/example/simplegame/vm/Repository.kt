@@ -1,4 +1,4 @@
-package com.example.simplegame
+package com.example.simplegame.vm
 
 import kotlin.math.abs
 import kotlin.random.Random

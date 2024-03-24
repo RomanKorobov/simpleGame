@@ -1,4 +1,4 @@
-package com.example.simplegame
+package com.example.simplegame.ui
 
 interface SwipeHandler {
     fun swipeUp()

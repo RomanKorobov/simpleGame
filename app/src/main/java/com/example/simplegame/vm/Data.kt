@@ -1,4 +1,4 @@
-package com.example.simplegame
+package com.example.simplegame.vm
 
 object Data {
     private val savedField = Array(4) { IntArray(4) }

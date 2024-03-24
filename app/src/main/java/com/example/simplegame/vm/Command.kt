@@ -1,4 +1,4 @@
-package com.example.simplegame
+package com.example.simplegame.vm
 
 enum class Command {
     LEFT, RIGHT, UP, DOWN

@@ -1,4 +1,4 @@
-package com.example.simplegame
+package com.example.simplegame.ui
 
 import android.os.Bundle
 import android.os.Handler
@@ -10,6 +10,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
+import com.example.simplegame.vm.Command
+import com.example.simplegame.vm.Data
+import com.example.simplegame.vm.PlayViewModel
+import com.example.simplegame.R
+import com.example.simplegame.vm.Repository
 import com.example.simplegame.databinding.FragmentPlayBinding
 
 class PlayFragment : Fragment(R.layout.fragment_play), SwipeHandler {

@@ -1,4 +1,4 @@
-package com.example.simplegame
+package com.example.simplegame.ui
 
 import android.content.Context
 import android.view.GestureDetector
