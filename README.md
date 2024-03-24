@@ -1,5 +1,6 @@
 # simpleGame
 Remake of old game 2048
-![Screenshot_2023-08-23-15-18-19-740_com example simplegame](https://github.com/RomanKorobov/simpleGame/assets/102857883/39683245-7aef-4245-956e-9754e7790da6)
-![Screenshot_2023-08-23-15-18-24-965_com example simplegame](https://github.com/RomanKorobov/simpleGame/assets/102857883/6bcd00ed-a681-4e22-a400-1566bb24d143)
-![Screenshot_2023-08-23-15-27-14-672_com example simplegame](https://github.com/RomanKorobov/simpleGame/assets/102857883/7f786ba9-8475-4e6b-80d8-c826d683286b)
+
+![photo_2024-03-25_00-26-43](https://github.com/RomanKorobov/simpleGame/assets/102857883/1701bf1d-9b5c-41ef-92f4-1b880a527546)
+![photo_2024-03-25_00-26-46](https://github.com/RomanKorobov/simpleGame/assets/102857883/c7384877-fab2-4214-a282-804dff87e52a)
+![photo_2024-03-25_00-26-48](https://github.com/RomanKorobov/simpleGame/assets/102857883/86d5b197-f0a4-4b69-8fc6-a44b2300d4e2)
