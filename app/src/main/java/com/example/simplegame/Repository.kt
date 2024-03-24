@@ -1,6 +1,5 @@
 package com.example.simplegame
 
-import android.util.Log
 import kotlin.math.abs
 import kotlin.random.Random
 
@@ -18,6 +17,7 @@ class Repository {
         }
         if (check) startedPosition()
     }
+
     fun getField() = field
 
     fun setField(curField: Array<IntArray>) {
@@ -29,7 +29,7 @@ class Repository {
         startedPosition()
     }
 
-    fun startedPosition() {
+    private fun startedPosition() {
         getNewNum(field)
         getNewNum(field)
     }
@@ -43,6 +43,7 @@ class Repository {
             curField[i][j] = listOf(2, 4).random()
         }
     }
+
     private fun predictLeft() {
         leftField = Array(4) { IntArray(4) }
         for (i in 0 until 4) {
@@ -79,7 +80,6 @@ class Repository {
             for (j in row.indices) {
                 rightField[i][3 - j] = row[j]
             }
-            Log.d("GEST", rightField[i].joinToString(" "))
             row.clear()
         }
     }

@@ -8,7 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
-class PlayViewModel(private val repository: Repository): ViewModel() {
+class PlayViewModel(private val repository: Repository) : ViewModel() {
     private val handler = CoroutineExceptionHandler { _, throwable -> throwable.printStackTrace() }
     private val _leftField = MutableLiveData<Array<IntArray>?>()
     val leftField: MutableLiveData<Array<IntArray>?>
@@ -22,9 +22,12 @@ class PlayViewModel(private val repository: Repository): ViewModel() {
     private val _downField = MutableLiveData<Array<IntArray>?>()
     val downField: MutableLiveData<Array<IntArray>?>
         get() = _downField
+    val gameOver: Boolean
+        get() = invalidMove(_downField.value!!) && invalidMove(_upField.value!!)
+                && invalidMove(_leftField.value!!) && invalidMove(_rightField.value!!)
 
     fun predict() {
-        viewModelScope.launch (Dispatchers.Default + handler){
+        viewModelScope.launch(Dispatchers.Default + handler) {
             val left = async { repository.swipeLeft() }
             _leftField.postValue(left.await())
             val right = async { repository.swipeRight() }
@@ -42,10 +45,12 @@ class PlayViewModel(private val repository: Repository): ViewModel() {
         _upField.postValue(null)
         _downField.postValue(null)
     }
+
     fun getField() = repository.getField()
     fun setField(curField: Array<IntArray>) {
         repository.setField(curField)
     }
+
     fun setNewGameField() {
         repository.setNewGameField()
     }
@@ -53,6 +58,7 @@ class PlayViewModel(private val repository: Repository): ViewModel() {
     fun addNewNum(targetField: Array<IntArray>) {
         repository.getNewNum(targetField)
     }
+
     fun invalidMove(newField: Array<IntArray>): Boolean {
         val curField = repository.getField()
         for (i in newField.indices) {

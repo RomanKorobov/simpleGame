@@ -18,5 +18,5 @@
         android:id="@+id/playFragment"
         android:name="com.example.simplegame.PlayFragment"
         android:label="PlayFragment"
-        tools:layout="@layout/fragment_play"/>
+        tools:layout="@layout/fragment_play" />
 </navigation>
