@@ -111,19 +111,19 @@ class PlayFragment : Fragment(R.layout.fragment_play), SwipeHandler {
         when(com) {
             Command.LEFT -> {
                 newField = viewModel.leftField.value!!
-                valid = viewModel.validMove(newField)
+                valid = !viewModel.invalidMove(newField)
             }
             Command.UP -> {
                 newField = viewModel.upField.value!!
-                valid = viewModel.validMove(newField)
+                valid = !viewModel.invalidMove(newField)
             }
             Command.RIGHT -> {
                 newField = viewModel.rightField.value!!
-                valid = viewModel.validMove(newField)
+                valid = !viewModel.invalidMove(newField)
             }
             Command.DOWN -> {
                 newField = viewModel.downField.value!!
-                valid = viewModel.validMove(newField)
+                valid = !viewModel.invalidMove(newField)
             }
         }
         if (valid) {

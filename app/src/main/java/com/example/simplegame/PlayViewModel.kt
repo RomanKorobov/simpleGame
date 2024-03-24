@@ -53,7 +53,13 @@ class PlayViewModel(private val repository: Repository): ViewModel() {
     fun addNewNum(targetField: Array<IntArray>) {
         repository.getNewNum(targetField)
     }
-    fun validMove(newField: Array<IntArray>): Boolean {
-        return !newField.contentEquals(repository.getField())
+    fun invalidMove(newField: Array<IntArray>): Boolean {
+        val curField = repository.getField()
+        for (i in newField.indices) {
+            for (j in newField.indices) {
+                if (newField[i][j] != curField[i][j]) return false
+            }
+        }
+        return true
     }
 }
