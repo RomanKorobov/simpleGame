@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import com.example.simplegame.vm.Command
 import com.example.simplegame.vm.Data
 import com.example.simplegame.vm.PlayViewModel
@@ -24,6 +25,10 @@ class PlayFragment : Fragment(R.layout.fragment_play), SwipeHandler {
     private val handler = Handler(Looper.getMainLooper())
     private var command = MutableLiveData<Command?>()
     private lateinit var mesh: Map<Pair<Int, Int>, TextView>
+    private lateinit var downObserver: Observer<in Array<IntArray>?>
+    private lateinit var upObserver: Observer<in Array<IntArray>?>
+    private lateinit var leftObserver: Observer<in Array<IntArray>?>
+    private lateinit var rightObserver: Observer<in Array<IntArray>?>
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,6 +61,7 @@ class PlayFragment : Fragment(R.layout.fragment_play), SwipeHandler {
             Pair(Pair(3, 2), binding.el32),
             Pair(Pair(3, 3), binding.el33)
         )
+        createObservers()
         observe()
         drawField(viewModel.getField())
         viewModel.predict()
@@ -85,10 +91,12 @@ class PlayFragment : Fragment(R.layout.fragment_play), SwipeHandler {
 
     private fun newGame() {
         binding.gameOverTextView.visibility = View.INVISIBLE
+        clearObservers()
+        viewModel.setNewGameField()
         viewModel.reset()
         command.postValue(null)
-        viewModel.setNewGameField()
         drawField(viewModel.getField())
+        createObservers()
         viewModel.predict()
     }
 
@@ -161,42 +169,10 @@ class PlayFragment : Fragment(R.layout.fragment_play), SwipeHandler {
     }
 
     private fun observe() {
-        viewModel.leftField.observe(viewLifecycleOwner) {
-            if (it != null && command.value == Command.LEFT) handler.post {
-                viewModel.leftField.value?.let {
-                    nextMove(
-                        command.value!!
-                    )
-                }
-            }
-        }
-        viewModel.rightField.observe(viewLifecycleOwner) {
-            if (it != null && command.value == Command.RIGHT) handler.post {
-                viewModel.rightField.value?.let {
-                    nextMove(
-                        command.value!!
-                    )
-                }
-            }
-        }
-        viewModel.upField.observe(viewLifecycleOwner) {
-            if (it != null && command.value == Command.UP) handler.post {
-                viewModel.upField.value?.let {
-                    nextMove(
-                        command.value!!
-                    )
-                }
-            }
-        }
-        viewModel.downField.observe(viewLifecycleOwner) {
-            if (it != null && command.value == Command.DOWN) handler.post {
-                viewModel.downField.value?.let {
-                    nextMove(
-                        command.value!!
-                    )
-                }
-            }
-        }
+        viewModel.leftField.observe(viewLifecycleOwner, leftObserver)
+        viewModel.rightField.observe(viewLifecycleOwner, rightObserver)
+        viewModel.upField.observe(viewLifecycleOwner, upObserver)
+        viewModel.downField.observe(viewLifecycleOwner, downObserver)
         command.observe(viewLifecycleOwner) {
             if (it != null) {
                 when (it) {
@@ -215,6 +191,52 @@ class PlayFragment : Fragment(R.layout.fragment_play), SwipeHandler {
                     Command.UP -> {
                         viewModel.upField.value?.let { nextMove(command.value!!) }
                     }
+                }
+            }
+        }
+    }
+
+    private fun clearObservers() {
+        viewModel.downField.removeObserver(downObserver)
+        viewModel.upField.removeObserver(upObserver)
+        viewModel.leftField.removeObserver(leftObserver)
+        viewModel.rightField.removeObserver(rightObserver)
+    }
+
+    private fun createObservers() {
+        leftObserver = Observer {
+            if (it != null && command.value == Command.LEFT) handler.post {
+                viewModel.leftField.value?.let {
+                    nextMove(
+                        command.value!!
+                    )
+                }
+            }
+        }
+        rightObserver = Observer {
+            if (it != null && command.value == Command.RIGHT) handler.post {
+                viewModel.rightField.value?.let {
+                    nextMove(
+                        command.value!!
+                    )
+                }
+            }
+        }
+        upObserver = Observer {
+            if (it != null && command.value == Command.UP) handler.post {
+                viewModel.upField.value?.let {
+                    nextMove(
+                        command.value!!
+                    )
+                }
+            }
+        }
+        downObserver = Observer {
+            if (it != null && command.value == Command.DOWN) handler.post {
+                viewModel.downField.value?.let {
+                    nextMove(
+                        command.value!!
+                    )
                 }
             }
         }

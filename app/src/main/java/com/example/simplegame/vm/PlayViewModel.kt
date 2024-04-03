@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
@@ -25,9 +26,10 @@ class PlayViewModel(private val repository: Repository) : ViewModel() {
     val gameOver: Boolean
         get() = invalidMove(_downField.value!!) && invalidMove(_upField.value!!)
                 && invalidMove(_leftField.value!!) && invalidMove(_rightField.value!!)
+    private lateinit var jobPredict: Job
 
     fun predict() {
-        viewModelScope.launch(Dispatchers.Default + handler) {
+        jobPredict = viewModelScope.launch(Dispatchers.Default + handler) {
             val left = async { repository.swipeLeft() }
             _leftField.postValue(left.await())
             val right = async { repository.swipeRight() }
@@ -40,6 +42,7 @@ class PlayViewModel(private val repository: Repository) : ViewModel() {
     }
 
     fun reset() {
+        if (jobPredict.isActive) jobPredict.cancel()
         _leftField.postValue(null)
         _rightField.postValue(null)
         _upField.postValue(null)
